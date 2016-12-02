@@ -4,15 +4,17 @@
 
 - name: List available repos
   become: True
-  shell: >
-    su - {{ aptly_user }} -c 'aptly repo list -raw'
+  become_user: "{{ aptly_user }}"
+  become_method: "sudo"
+  command: aptly repo list -raw
   changed_when: False
   register: aptly_repos_list
 
 - name: Remove repos
   become: True
-  shell: >
-    su - {{ aptly_user }} -c 'aptly repo drop {{ item.name }}'
+  become_user: "{{ aptly_user }}"
+  become_method: "sudo"
+  command: "aptly repo drop {{ item.name }}"
   register: aptly_repos_removed
   notify: "Clean aptly database"
   with_items: "{{ aptly_repos }}"
@@ -22,10 +24,11 @@
 
 - name: Create repos
   become: True
-  shell: >
-    su - {{ aptly_user }} -c 'aptly repo create
-    {{ item.create_flags | join(" ") }}
-    {{ item.name }}'
+  become_user: "{{ aptly_user }}"
+  become_method: "sudo"
+  command: >
+    aptly repo create {{ item.create_flags | join(" ") }}
+    {{ item.name }}
   register: aptly_repos_created
   with_items: "{{ aptly_repos }}"
   when:
