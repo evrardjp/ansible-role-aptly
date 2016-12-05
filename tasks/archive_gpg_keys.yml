@@ -5,7 +5,7 @@
 - name: Export system archive GPG keys
   become: True
   become_user: "{{ aptly_user }}"
-  become_method: "sudo"
+  become_method: "{{ aptly_become_method }}"
   command: >
     gpg --no-default-keyring --keyring
     /usr/share/keyrings/{{ ansible_distribution | lower }}-archive-keyring.gpg
@@ -16,7 +16,7 @@
 - name: Import system archive GPG keys
   become: True
   become_user: "{{ aptly_user }}"
-  become_method: "sudo"
+  become_method: "{{ aptly_become_method }}"
   command: >
     gpg --no-default-keyring
     --keyring {{ aptly_system_archive_gpg_keys_keyring }} --import

@@ -5,7 +5,7 @@
 - name: List available repos
   become: True
   become_user: "{{ aptly_user }}"
-  become_method: "sudo"
+  become_method: "{{ aptly_become_method }}"
   command: aptly repo list -raw
   changed_when: False
   register: aptly_repos_list
@@ -13,7 +13,7 @@
 - name: Remove repos
   become: True
   become_user: "{{ aptly_user }}"
-  become_method: "sudo"
+  become_method: "{{ aptly_become_method }}"
   command: "aptly repo drop {{ item.name }}"
   register: aptly_repos_removed
   notify: "Clean aptly database"
@@ -25,7 +25,7 @@
 - name: Create repos
   become: True
   become_user: "{{ aptly_user }}"
-  become_method: "sudo"
+  become_method: "{{ aptly_become_method }}"
   command: >
     aptly repo create {{ item.create_flags | join(" ") }}
     {{ item.name }}
