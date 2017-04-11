@@ -22,8 +22,10 @@
     --keyring {{ aptly_system_archive_gpg_keys_keyring }} --import
     /tmp/{{ aptly_system_archive_gpg_keys_keyring }}
   register: aptly_archive_gpg_keys_added
-  changed_when: False
-  when: "{{ aptly_system_archive_gpg_keys_import == True }}"
+  changed_when:
+    - aptly_archive_gpg_keys_added.stderr is defined
+    - aptly_archive_gpg_keys_added.stderr.find(' changed:') != -1
+  when: aptly_system_archive_gpg_keys_import | bool
 
 - name: Remove temp archive gpg export
   become: True
@@ -31,11 +33,3 @@
     dest: "/tmp/{{ aptly_system_archive_gpg_keys_keyring }}"
     state: 'absent'
   changed_when: False
-
-- name: Check if new GPG key managed
-  command: 'echo "New GPG key"'
-  when:
-    - "{{ aptly_system_archive_gpg_keys_import == True }}"
-    - "{{ aptly_archive_gpg_keys_added.result.stderr is defined }}"
-    - "{{ aptly_archive_gpg_keys_added.result.stderr.find(' changed:') != -1 }}"
-
